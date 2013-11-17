@@ -3,11 +3,11 @@
 # ----------------------- #
 
 url: http://imsg.github.io
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: Anson’s DEV Space 
+subtitle: A bloggin.
+author: Anson Zhao
 simple_search: http://google.com/search
-description:
+description: iOS开发者，曾经从事Symbian开发
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
