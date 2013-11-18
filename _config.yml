@@ -3,11 +3,11 @@
 # ----------------------- #
 
 url: http://imsg.github.io
-title: Anson’s DEV Space 
-subtitle: A bloggin.
+title: I'm Anson 
+subtitle: iOS开发者，曾经从事Symbian开发
 author: Anson Zhao
-simple_search: http://google.com/search
-description: iOS开发者，曾经从事Symbian开发
+simple_search: http://www.google.com.hk/search
+description: 
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
@@ -20,6 +20,7 @@ subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
 email:
+email_md5: c5b455f7ab7dbc4c583090876a47e0cd
 
 # ----------------------- #
 #    Jekyll & Plugins     #
@@ -98,3 +99,10 @@ google_analytics_tracking_id:
 
 # Facebook Like
 facebook_like: false
+facebook_user: anson7956
+
+linkedin_user: azhao
+
+# Weibo
+weibo_user: imsg # 微博数字 ID 或域名 ID
+weibo_share: true # 是否开启微博分享按钮
