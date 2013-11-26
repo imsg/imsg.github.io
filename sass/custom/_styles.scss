@@ -11,7 +11,7 @@ a:visited, #content .blog-index article h1 a:hover { color: #1863A1; }
 /* ----- main layout ----- */
 
 
-html { background: #262C33 url("/images/line-tile.png"); }
+//html { background: #262C33 url("/images/line-tile.png"); }
 
 body { font-size: 0.6em; }
 
@@ -23,7 +23,7 @@ body > div > div { background-image: none; }
 /* ----- header ----- */
 
 
-body > header{
+/*body > header{
     background: none;
     padding: 1.6em 0 1em 0
 }
@@ -54,11 +54,11 @@ body > nav a{
 body > nav form .search{
     padding: .2em .3em;
 }
-
+*/
 
 /* ----- Content ----- */
 
-
+/*
 #content .blog-index article h1 {
     font-size: 1.8em;
     font-weight: normal;
@@ -85,11 +85,11 @@ article p {
     text-align:justify;
     margin-bottom: 1em;
 }
-
+*/
 
 /* ----- Sidebar ----- */
 
-
+/*
 aside.sidebar section h1 { letter-spacing: 0.1em; }
 
 aside.sidebar a { text-decoration: none; }
@@ -107,30 +107,30 @@ aside.sidebar{
     -webkit-border-radius: 0 0.4em 0 0;
     border-radius: 0 0.4em 0 0;
 }
-
+*/
 
 /* ----- Footer ----- */
 
-
+/*
 body > footer{
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius:0;
     margin-bottom: 0;
 }
-
+*/
 
 /* ----- 404 ----- */
 
-
+/*
 .notfound404 article{
     margin-left: 0 !important;
 }
-
+*/
 
 /* ----- Media queries ----- */
 
-
+/*
 @media only screen and (min-width: 550px) {
 
     body > header h1{
@@ -178,3 +178,4 @@ body > footer{
         border-radius: 6px;
     }
 }
+*/
