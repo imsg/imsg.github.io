@@ -10,14 +10,14 @@ a:visited, #content .blog-index article h1 a:hover { color: #1863A1; }
 
 /* ----- main layout ----- */
 
-
 //html { background: #262C33 url("/images/line-tile.png"); }
 
 body { font-size: 0.6em; }
 
 body > div { background-image: none; }
 
-body > div > div { background-image: none; }
+//body > div > div { background-image: none; border-right-width: 0px;}
+body > div > div { border-right-width: 0px;}
 
 
 /* ----- header ----- */
