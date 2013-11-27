@@ -13,10 +13,11 @@ categories: [iOS]
 * NSManagedObjects不是线程安全的，但是NSManagedObjectIDs是线程安全的
 * 如果在background保存，则需要通过core data Notification将changes同步到其他contexts
 
-参考：
+![CORE DATA STACK](http://www.objc.io/images/issue-4/stack-complex.png)
 
-[https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreData/Articles/cdConcurrency.html](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreData/Articles/cdConcurrency.html)
-[http://www.objc.io/issue-4/core-data-overview.html](http://www.objc.io/issue-4/core-data-overview.html)
+参考：  
+[Concurrency with Core Data](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreData/Articles/cdConcurrency.html)  
+[Core Data Overview](http://www.objc.io/issue-4/core-data-overview.html)
 
 
 ### How MagicalRecord resolve multi-threading concurrency issue
@@ -56,10 +57,9 @@ Person *person = ...;
 * main thread中回调completion，返回是否成功和error code
 
 
-参考：
-
-[http://www.cimgf.com/2011/05/04/core-data-and-threads-without-the-headache/](http://www.cimgf.com/2011/05/04/core-data-and-threads-without-the-headache/)
-[https://github.com/magicalpanda/MagicalRecord/blob/release/2.2/Docs/Threads.md](https://github.com/magicalpanda/MagicalRecord/blob/release/2.2/Docs/Threads.md)
+参考：  
+[CORE DATA AND THREADS, WITHOUT THE HEADACHE](http://www.cimgf.com/2011/05/04/core-data-and-threads-without-the-headache/)  
+[Performing Core Data operations on Threads](https://github.com/magicalpanda/MagicalRecord/blob/release/2.2/Docs/Threads.md)
 
 
 ###Conclusion
