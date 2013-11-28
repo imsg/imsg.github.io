@@ -1,0 +1,227 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Core data/MagicalRecord concurrency reseach - I'm Anson</title>
+	<meta name="author" content="Anson Zhao">
+
+	
+	<meta name="description" content="Core data/MagicalRecord Concurrency Reseach Core data research 每个线程必须有自己的NSManagedObjectContext
+NSManagedObjects不是线程安全的，但是NSManagedObjectIDs是线程安全的 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="I'm Anson" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://imsg.github.io/blog/2013/11/26/core-data-slash-magicalrecord-concurrency-reseach/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src="http://www.gravatar.com/avatar/c5b455f7ab7dbc4c583090876a47e0cd?s=160" alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+<hgroup>
+  <h1><a href="/">I'm Anson</a></h1>
+  
+    <p class="subtitle">iOS开发者，曾经从事Symbian开发</p>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+			<a class="weibo" href="http://www.weibo.com/imsg" title="Weibo">Weibo</a>
+		
+		
+			<a class="facebook" href="http://www.facebook.com/anson7956" title="Facebook">Facebook</a>
+		
+		
+		
+		
+		
+		
+		
+			<a class="linkedin" href="http://www.linkedin.com/in/azhao" title="LinkedIn">LinkedIn</a>
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Core data/MagicalRecord Concurrency Reseach</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>Core data research</h3>
+
+<ul>
+<li>每个线程必须有自己的NSManagedObjectContext</li>
+<li>NSManagedObjects不是线程安全的，但是NSManagedObjectIDs是线程安全的</li>
+<li>如果在background保存，则需要通过core data Notification将changes同步到其他contexts</li>
+</ul>
+
+
+<p><img src="http://imsg.github.com/images/core-data-stack-complex.png" alt="CORE DATA STACK" /></p>
+
+<p>参考：<br/>
+<a href="https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreData/Articles/cdConcurrency.html">Concurrency with Core Data</a><br/>
+<a href="http://www.objc.io/issue-4/core-data-overview.html">Core Data Overview</a></p>
+
+<h3>How MagicalRecord resolve multi-threading concurrency issue</h3>
+
+<p>以下为异步保存的code</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">person</span> <span class="o">=</span> <span class="p">...;</span>
+</span><span class='line'><span class="p">[</span><span class="n">MagicalRecord</span> <span class="nl">saveWithBlock:</span><span class="o">^</span><span class="p">(</span><span class="n">NSManagedObjectContext</span> <span class="o">*</span><span class="n">localContext</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Person</span> <span class="o">*</span><span class="n">localPerson</span> <span class="o">=</span> <span class="p">[</span><span class="n">person</span> <span class="nl">MR_inContext:</span><span class="n">localContext</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">localPerson</span><span class="p">.</span><span class="n">firstName</span> <span class="o">=</span> <span class="s">@&quot;John&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">localPerson</span><span class="p">.</span><span class="n">lastName</span> <span class="o">=</span> <span class="s">@&quot;Appleseed&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span> <span class="nl">completion:</span><span class="o">^</span><span class="p">(</span><span class="kt">BOOL</span> <span class="n">success</span><span class="p">,</span> <span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">everyoneInTheDepartment</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">findAll</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如以上例子，在block里的save操作不会在main thread里，以独立的NSManagedObjectContext来工作。任务完成后，completion block将会被main thread调用，可以安全的更新UI部分。
+操作对象NSManagedObject是通过NSManagedObjectID来得到的，在当前context中安全使用。</p>
+
+<h3>saveWithBlock如何工作</h3>
+
+<ul>
+<li>创建一个NSPrivateQueueConcurrencyType类型的NSManagedObjectContext，parentConext为rootSavingContext</li>
+<li>设置notification</li>
+<li>回调block，返回新建立的context</li>
+<li>如果有任何改动，保存当前context</li>
+<li>rootSavingContext同样会被保存</li>
+<li>Main thread的default context将会通过notification机制merge此改动</li>
+<li>main thread中回调completion，返回是否成功和error code</li>
+</ul>
+
+
+<p>参考：<br/>
+<a href="http://www.cimgf.com/2011/05/04/core-data-and-threads-without-the-headache/">CORE DATA AND THREADS, WITHOUT THE HEADACHE</a><br/>
+<a href="https://github.com/magicalpanda/MagicalRecord/blob/release/2.2/Docs/Threads.md">Performing Core Data operations on Threads</a></p>
+
+<h3>Conclusion</h3>
+
+<p>MagicalRecord非常好的解决了core data多线程并发问题，我们只需要使用好MagicalRecord就能解决UI界面freeze等的问题。</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<!--a class="addthis_counter addthis_pill_style"></a-->
+	</div>
+	
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1362172265438409" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js"></script>
+<!-- UY END -->
+	
+  <!--script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script-->
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - Anson Zhao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

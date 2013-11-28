@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 翻译 | I'm Anson]]></title>
+  <link href="http://imsg.github.io/blog/categories/fan-yi/atom.xml" rel="self"/>
+  <link href="http://imsg.github.io/"/>
+  <updated>2013-11-29T00:09:46+08:00</updated>
+  <id>http://imsg.github.io/</id>
+  <author>
+    <name><![CDATA[Anson Zhao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Thread-Safe Class Design]]></title>
+    <link href="http://imsg.github.io/blog/2013/11/28/thread-safe-class-design/"/>
+    <updated>2013-11-28T22:39:00+08:00</updated>
+    <id>http://imsg.github.io/blog/2013/11/28/thread-safe-class-design</id>
+    <content type="html"><![CDATA[<p>翻译自<a href="http://www.objc.io/issue-2/thread-safe-class-design.html">Thread-Safe Class Design</a></p>
+
+<h1>线程安全类的设计</h1>
+
+<p>此文章将侧重于编写线程安全类和使用Grand Central Displatch(GCD)时的实用的技巧，设计模式，以及反模式。</p>
+
+<h1>线程安全</h1>
+
+<h3>Apple的框架</h3>
+
+<p>首先让我们来看一下Apple的框架。一般情况下，除非提前声明，否则大多数类默认不是线程安全的。一些是我们所期望的，但是另一些却会相当有趣。</p>
+
+<p>其中甚至有经验的iOS/Mac开发人员常会犯的错误是在后台线程中访问部分UIKit/AppKit。最容易犯的错误是在后台线程中对property赋值，比如图片，因为他们的内容是在后台从网络上获取的。Apple的代码是性能优化过的，如果你从不同线程去改动property，它是不会警告你的。</p>
+
+<p>例如图片这种情况，一个常见的问题是你的改动会产生延迟。但是如果两个线程同时设置图片，很可能你的程序将直接崩溃，因为当前设置的图片可能会被释放两次。由于这是和时机相关的，因此崩溃通常发生在客户使用时，而并不是在开发过程中。</p>
+
+<p>虽然没有官方的工具来发现这样的错误，但是有一些技巧可以避免这种错误发生。<a href="https://gist.github.com/steipete/5664345">The UIKit Main Thread Guard</a>是一小段代码，可以修补任何调用UIView的setNeedsLayout和setNeedsDisplay，以及在发送调用之前检查是否执行在主线程。由于这两种方法被许多UIKit的setters方法调用（包括图片），这将会捕获许多线程相关的错误。虽然这个不使用私有API，但是我们不建议在产品程序中使用，而是最好在开发过程是使用。</p>
+
+<p>UIKit非线程安全是Apple有意的设计决定。从性能方面来说线程安全没有太多好处，它实际上会使很多事情变慢。而事实上UIKit和主线程捆绑使它很容易编写并发程序和使用UIKit。你所需要做的就是确保总是在主线程上调用UIKit。</p>
+
+<h3>为什么UIKit不是线程安全的？</h3>
+
+<p>未完待续。。。</p>
+]]></content>
+  </entry>
+  
+</feed>

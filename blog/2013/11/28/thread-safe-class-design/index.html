@@ -1,0 +1,178 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Thread-Safe Class Design - I'm Anson</title>
+	<meta name="author" content="Anson Zhao">
+
+	
+	<meta name="description" content="Thread-Safe Class Design 翻译自Thread-Safe Class Design 线程安全类的设计 此文章将侧重于编写线程安全类和使用Grand Central Displatch(GCD)时的实用的技巧，设计模式，以及反模式。 线程安全 Apple的框架 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="I'm Anson" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://imsg.github.io/blog/2013/11/28/thread-safe-class-design/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src="http://www.gravatar.com/avatar/c5b455f7ab7dbc4c583090876a47e0cd?s=160" alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+<hgroup>
+  <h1><a href="/">I'm Anson</a></h1>
+  
+    <p class="subtitle">iOS开发者，曾经从事Symbian开发</p>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+			<a class="weibo" href="http://www.weibo.com/imsg" title="Weibo">Weibo</a>
+		
+		
+			<a class="facebook" href="http://www.facebook.com/anson7956" title="Facebook">Facebook</a>
+		
+		
+		
+		
+		
+		
+		
+			<a class="linkedin" href="http://www.linkedin.com/in/azhao" title="LinkedIn">LinkedIn</a>
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Thread-Safe Class Design</h1>
+	<div class="entry-content" itemprop="articleBody"><p>翻译自<a href="http://www.objc.io/issue-2/thread-safe-class-design.html">Thread-Safe Class Design</a></p>
+
+<h1>线程安全类的设计</h1>
+
+<p>此文章将侧重于编写线程安全类和使用Grand Central Displatch(GCD)时的实用的技巧，设计模式，以及反模式。</p>
+
+<h1>线程安全</h1>
+
+<h3>Apple的框架</h3>
+
+<p>首先让我们来看一下Apple的框架。一般情况下，除非提前声明，否则大多数类默认不是线程安全的。一些是我们所期望的，但是另一些却会相当有趣。</p>
+
+<p>其中甚至有经验的iOS/Mac开发人员常会犯的错误是在后台线程中访问部分UIKit/AppKit。最容易犯的错误是在后台线程中对property赋值，比如图片，因为他们的内容是在后台从网络上获取的。Apple的代码是性能优化过的，如果你从不同线程去改动property，它是不会警告你的。</p>
+
+<p>例如图片这种情况，一个常见的问题是你的改动会产生延迟。但是如果两个线程同时设置图片，很可能你的程序将直接崩溃，因为当前设置的图片可能会被释放两次。由于这是和时机相关的，因此崩溃通常发生在客户使用时，而并不是在开发过程中。</p>
+
+<p>虽然没有官方的工具来发现这样的错误，但是有一些技巧可以避免这种错误发生。<a href="https://gist.github.com/steipete/5664345">The UIKit Main Thread Guard</a>是一小段代码，可以修补任何调用UIView的setNeedsLayout和setNeedsDisplay，以及在发送调用之前检查是否执行在主线程。由于这两种方法被许多UIKit的setters方法调用（包括图片），这将会捕获许多线程相关的错误。虽然这个不使用私有API，但是我们不建议在产品程序中使用，而是最好在开发过程是使用。</p>
+
+<p>UIKit非线程安全是Apple有意的设计决定。从性能方面来说线程安全没有太多好处，它实际上会使很多事情变慢。而事实上UIKit和主线程捆绑使它很容易编写并发程序和使用UIKit。你所需要做的就是确保总是在主线程上调用UIKit。</p>
+
+<h3>为什么UIKit不是线程安全的？</h3>
+
+<p>未完待续。。。</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<!--a class="addthis_counter addthis_pill_style"></a-->
+	</div>
+	
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1362172265438409" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js"></script>
+<!-- UY END -->
+	
+  <!--script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script-->
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - Anson Zhao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

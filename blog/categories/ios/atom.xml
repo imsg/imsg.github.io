@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS | I'm Anson]]></title>
+  <link href="http://imsg.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://imsg.github.io/"/>
+  <updated>2013-11-29T00:09:46+08:00</updated>
+  <id>http://imsg.github.io/</id>
+  <author>
+    <name><![CDATA[Anson Zhao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Thread-Safe Class Design]]></title>
+    <link href="http://imsg.github.io/blog/2013/11/28/thread-safe-class-design/"/>
+    <updated>2013-11-28T22:39:00+08:00</updated>
+    <id>http://imsg.github.io/blog/2013/11/28/thread-safe-class-design</id>
+    <content type="html"><![CDATA[<p>翻译自<a href="http://www.objc.io/issue-2/thread-safe-class-design.html">Thread-Safe Class Design</a></p>
+
+<h1>线程安全类的设计</h1>
+
+<p>此文章将侧重于编写线程安全类和使用Grand Central Displatch(GCD)时的实用的技巧，设计模式，以及反模式。</p>
+
+<h1>线程安全</h1>
+
+<h3>Apple的框架</h3>
+
+<p>首先让我们来看一下Apple的框架。一般情况下，除非提前声明，否则大多数类默认不是线程安全的。一些是我们所期望的，但是另一些却会相当有趣。</p>
+
+<p>其中甚至有经验的iOS/Mac开发人员常会犯的错误是在后台线程中访问部分UIKit/AppKit。最容易犯的错误是在后台线程中对property赋值，比如图片，因为他们的内容是在后台从网络上获取的。Apple的代码是性能优化过的，如果你从不同线程去改动property，它是不会警告你的。</p>
+
+<p>例如图片这种情况，一个常见的问题是你的改动会产生延迟。但是如果两个线程同时设置图片，很可能你的程序将直接崩溃，因为当前设置的图片可能会被释放两次。由于这是和时机相关的，因此崩溃通常发生在客户使用时，而并不是在开发过程中。</p>
+
+<p>虽然没有官方的工具来发现这样的错误，但是有一些技巧可以避免这种错误发生。<a href="https://gist.github.com/steipete/5664345">The UIKit Main Thread Guard</a>是一小段代码，可以修补任何调用UIView的setNeedsLayout和setNeedsDisplay，以及在发送调用之前检查是否执行在主线程。由于这两种方法被许多UIKit的setters方法调用（包括图片），这将会捕获许多线程相关的错误。虽然这个不使用私有API，但是我们不建议在产品程序中使用，而是最好在开发过程是使用。</p>
+
+<p>UIKit非线程安全是Apple有意的设计决定。从性能方面来说线程安全没有太多好处，它实际上会使很多事情变慢。而事实上UIKit和主线程捆绑使它很容易编写并发程序和使用UIKit。你所需要做的就是确保总是在主线程上调用UIKit。</p>
+
+<h3>为什么UIKit不是线程安全的？</h3>
+
+<p>未完待续。。。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Core data/MagicalRecord concurrency reseach]]></title>
+    <link href="http://imsg.github.io/blog/2013/11/26/core-data-slash-magicalrecord-concurrency-reseach/"/>
+    <updated>2013-11-26T09:17:00+08:00</updated>
+    <id>http://imsg.github.io/blog/2013/11/26/core-data-slash-magicalrecord-concurrency-reseach</id>
+    <content type="html"><![CDATA[<h3>Core data research</h3>
+
+<ul>
+<li>每个线程必须有自己的NSManagedObjectContext</li>
+<li>NSManagedObjects不是线程安全的，但是NSManagedObjectIDs是线程安全的</li>
+<li>如果在background保存，则需要通过core data Notification将changes同步到其他contexts</li>
+</ul>
+
+
+<p><img src="http://imsg.github.com/images/core-data-stack-complex.png" alt="CORE DATA STACK" /></p>
+
+<p>参考：<br/>
+<a href="https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreData/Articles/cdConcurrency.html">Concurrency with Core Data</a><br/>
+<a href="http://www.objc.io/issue-4/core-data-overview.html">Core Data Overview</a></p>
+
+<h3>How MagicalRecord resolve multi-threading concurrency issue</h3>
+
+<p>以下为异步保存的code</p>
+
+<p>```objc
+Person <em>person = &hellip;;
+[MagicalRecord saveWithBlock:^(NSManagedObjectContext </em>localContext){</p>
+
+<pre><code>Person *localPerson = [person MR_inContext:localContext];
+
+localPerson.firstName = @"John";
+localPerson.lastName = @"Appleseed";
+</code></pre>
+
+<p>} completion:^(BOOL success, NSError *error) {</p>
+
+<pre><code>self.everyoneInTheDepartment = [Person findAll];
+</code></pre>
+
+<p>}];
+```</p>
+
+<p>如以上例子，在block里的save操作不会在main thread里，以独立的NSManagedObjectContext来工作。任务完成后，completion block将会被main thread调用，可以安全的更新UI部分。
+操作对象NSManagedObject是通过NSManagedObjectID来得到的，在当前context中安全使用。</p>
+
+<h3>saveWithBlock如何工作</h3>
+
+<ul>
+<li>创建一个NSPrivateQueueConcurrencyType类型的NSManagedObjectContext，parentConext为rootSavingContext</li>
+<li>设置notification</li>
+<li>回调block，返回新建立的context</li>
+<li>如果有任何改动，保存当前context</li>
+<li>rootSavingContext同样会被保存</li>
+<li>Main thread的default context将会通过notification机制merge此改动</li>
+<li>main thread中回调completion，返回是否成功和error code</li>
+</ul>
+
+
+<p>参考：<br/>
+<a href="http://www.cimgf.com/2011/05/04/core-data-and-threads-without-the-headache/">CORE DATA AND THREADS, WITHOUT THE HEADACHE</a><br/>
+<a href="https://github.com/magicalpanda/MagicalRecord/blob/release/2.2/Docs/Threads.md">Performing Core Data operations on Threads</a></p>
+
+<h3>Conclusion</h3>
+
+<p>MagicalRecord非常好的解决了core data多线程并发问题，我们只需要使用好MagicalRecord就能解决UI界面freeze等的问题。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Set toolbar items programmably]]></title>
+    <link href="http://imsg.github.io/blog/2013/11/22/set-toolbar-items-programmably/"/>
+    <updated>2013-11-22T12:17:00+08:00</updated>
+    <id>http://imsg.github.io/blog/2013/11/22/set-toolbar-items-programmably</id>
+    <content type="html"><![CDATA[<p>今天在做动态设置UIToolbar中的items的时候发现一个问题，要求是在UITableView在editing状态和非editing状态下切换toolbar的items。</p>
+
+<p>以下是之前实现的方式
+<code>objc
+// toolbar
+UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+self.navigationController.toolbar.items = @[self.markButton, spaceItem, self.moveButton, spaceItem, self.trashButton];
+</code></p>
+
+<p>在此代码运行的时候，如果当前的view controller已经不是代码的view controller时，这段代码依然会执行，从而把当前view controller的toolbar给更新了，导致toolbar乱了。</p>
+
+<p>查了一下UIViewController的API，发现其自带设置toolbar item的方法：<code>- (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated</code></p>
+
+<p>以下为修改后的代码，只在代码所属的UIViewController中设置toolbar items。
+```objc</p>
+
+<pre><code>// toolbar
+UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+[self setToolbarItems:@[self.markButton, spaceItem, self.moveButton, spaceItem, self.trashButton] animated:YES];
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

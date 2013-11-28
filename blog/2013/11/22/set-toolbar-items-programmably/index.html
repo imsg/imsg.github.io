@@ -1,0 +1,185 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Set toolbar items programmably - I'm Anson</title>
+	<meta name="author" content="Anson Zhao">
+
+	
+	<meta name="description" content="Set Toolbar Items Programmably 今天在做动态设置UIToolbar中的items的时候发现一个问题，要求是在UITableView在editing状态和非editing状态下切换toolbar的items。 以下是之前实现的方式 1
+2
+3
+// toolbar &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="I'm Anson" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://imsg.github.io/blog/2013/11/22/set-toolbar-items-programmably/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src="http://www.gravatar.com/avatar/c5b455f7ab7dbc4c583090876a47e0cd?s=160" alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+<hgroup>
+  <h1><a href="/">I'm Anson</a></h1>
+  
+    <p class="subtitle">iOS开发者，曾经从事Symbian开发</p>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+			<a class="weibo" href="http://www.weibo.com/imsg" title="Weibo">Weibo</a>
+		
+		
+			<a class="facebook" href="http://www.facebook.com/anson7956" title="Facebook">Facebook</a>
+		
+		
+		
+		
+		
+		
+		
+			<a class="linkedin" href="http://www.linkedin.com/in/azhao" title="LinkedIn">LinkedIn</a>
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Set Toolbar Items Programmably</h1>
+	<div class="entry-content" itemprop="articleBody"><p>今天在做动态设置UIToolbar中的items的时候发现一个问题，要求是在UITableView在editing状态和非editing状态下切换toolbar的items。</p>
+
+<p>以下是之前实现的方式</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// toolbar</span>
+</span><span class='line'><span class="n">UIBarButtonItem</span> <span class="o">*</span><span class="n">spaceItem</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithBarButtonSystemItem:</span><span class="n">UIBarButtonSystemItemFlexibleSpace</span> <span class="nl">target:</span><span class="nb">nil</span> <span class="nl">action:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">navigationController</span><span class="p">.</span><span class="n">toolbar</span><span class="p">.</span><span class="n">items</span> <span class="o">=</span> <span class="err">@</span><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">markButton</span><span class="p">,</span> <span class="n">spaceItem</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">moveButton</span><span class="p">,</span> <span class="n">spaceItem</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">trashButton</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在此代码运行的时候，如果当前的view controller已经不是代码的view controller时，这段代码依然会执行，从而把当前view controller的toolbar给更新了，导致toolbar乱了。</p>
+
+<p>查了一下UIViewController的API，发现其自带设置toolbar item的方法：<code>- (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated</code></p>
+
+<p>以下为修改后的代码，只在代码所属的UIViewController中设置toolbar items。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// toolbar</span>
+</span><span class='line'><span class="n">UIBarButtonItem</span> <span class="o">*</span><span class="n">spaceItem</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithBarButtonSystemItem:</span><span class="n">UIBarButtonSystemItemFlexibleSpace</span> <span class="nl">target:</span><span class="nb">nil</span> <span class="nl">action:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">setToolbarItems:</span><span class="err">@</span><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">markButton</span><span class="p">,</span> <span class="n">spaceItem</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">moveButton</span><span class="p">,</span> <span class="n">spaceItem</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">trashButton</span><span class="p">]</span> <span class="nl">animated:</span><span class="n">YES</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<!--a class="addthis_counter addthis_pill_style"></a-->
+	</div>
+	
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1362172265438409" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js"></script>
+<!-- UY END -->
+	
+  <!--script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script-->
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - Anson Zhao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>
