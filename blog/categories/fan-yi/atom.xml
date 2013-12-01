@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 翻译 | I'm Anson]]></title>
   <link href="http://imsg.github.io/blog/categories/fan-yi/atom.xml" rel="self"/>
   <link href="http://imsg.github.io/"/>
-  <updated>2013-11-29T00:09:46+08:00</updated>
+  <updated>2013-12-01T23:09:13+08:00</updated>
   <id>http://imsg.github.io/</id>
   <author>
     <name><![CDATA[Anson Zhao]]></name>
@@ -39,6 +39,28 @@
 <p>UIKit非线程安全是Apple有意的设计决定。从性能方面来说线程安全没有太多好处，它实际上会使很多事情变慢。而事实上UIKit和主线程捆绑使它很容易编写并发程序和使用UIKit。你所需要做的就是确保总是在主线程上调用UIKit。</p>
 
 <h3>为什么UIKit不是线程安全的？</h3>
+
+<p>像UIKit这样大的框架上确保线程安全是一个重大的任务，会带来巨大的成本。改变非原子property为原子property只是所需要改变的一小部分。通常你想要一次改变多个property，然后才能看到更改的结果。对于这一点，Apple不得不暴露一个方法，像CoreData的<code>performBlock:</code>和同步的方法<code>performBlockAndWait:</code>。如果你考虑大多数调用UIKit类是有关配置(configuration)，使他们线程安全更没有意义。</p>
+
+<p>然而，即使调用不是关于配置(configuration)来共享内部状态，因此它们不是线程安全的。如果你已经写回到黑暗时代iOS3.2及以前的应用程序，你一定经历过当准备背景图像时使用<code>NSString</code>的<code>drawInRect:withFont:</code>随时崩溃。值得庆幸的是随着iOS4的到来，Apple提供了大部分绘图的方法和类，例如<code>UIColor</code>和<code>UIFont</code>在后台线程中的使用。</p>
+
+<p>不幸的是，Apple的文档目前还缺乏有关线程安全的主题。他们建议只在主线程访问，甚至连绘画方法他们都不能保证线程安全。所以阅读iOS的版本说明总是一个好主意。</p>
+
+<p>在大多数情况下，UIKit类只应该在程序的主线程使用。无论是从<code>UIResponder</code>派生的类，还是那些涉及以任何方式操作你的应用程序的用户界面。</p>
+
+<h3>解除分配问题</h3>
+
+<p>另一个在后台使用UIKit对象的风险是“解除分配问题”。Apple在TN2109里概括了这个问题，并提出了多种解决方案。这个问题是UI对象应该在主线程中释放，因为一部分对象有可能在dealloc中对视图层次结构进行更改。正如我们所知，这种对UIKit的调用需要发生在主线程上。</p>
+
+<p>由于它常见于次线程，操作或块保留调用者，这很容易出错，并且很难找到并修复。这也是在AFNetworking中长期存在的一个bug，只是因为不是很多人知道这个问题，照例，显然它很罕见，并且很难重现崩溃。在异步块操作里一贯使用<code>__weak</code>和不访问ivars会有所帮助。</p>
+
+<h3>集合类</h3>
+
+<p>Apple有一个很好的概述文档，对iOS和Mac上列出线程安全最常见的基础类。一般情况下，不可变类，像NSArray是线程安全的，而它们的可变的变体，像NSMutableArray则不是。事实上，当在一个队列中序列化的访问时，是可以在不同线程中使用它们的。请记住，方法可能返回一个集合对象的可变变体，即使它们生命它们的返回类型是不可变的。好的做法是写一些像<code>return [array copy]</code>来确保返回的对象实际上是不可变的。</p>
+
+<p>不同于像Java语言，Foundation框架不提供框架外的线程安全的集合类。其实这是非常合理的，因为在大多数情况下，你想在更高层使用你的锁去避免过多的锁操作。一个值得注意的例外是缓存，其中一个可变的字典可能会保存不变的数据-在这里Apple在iOS4中增加了NSCache，它不仅能锁定访问，还可以在低内存情况下清除它的内容。</p>
+
+<p>这就是说，在你的程序中，这也许是有效的情况，其中一个线程安全的可变的字典可以很轻便的。而这要归功于类簇(class cluster)的解决方案，它可以很容易的写一个。</p>
 
 <p>未完待续。。。</p>
 ]]></content>
