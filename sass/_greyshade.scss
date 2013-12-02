@@ -6,9 +6,9 @@ html {
 
 body {
 	background: #3D4349;
-	font-family: "Alegreya", Georgia, Cambria, "Times New Roman", Times, serif;
+	font-family: "Open Sans", "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
 	height: 100%;
-	color: #333;
+//	color: #333;
 }
 
 ::selection, ::-moz-selection, ::-webkit-selection {
@@ -77,7 +77,7 @@ body {
   		right: 0;
   		min-height: 100%;
 		width: 77%;
-		background: white;
+		background: whitesmoke;
 		#banner {
 			width: 100%;
 			small {
@@ -95,16 +95,16 @@ body {
 				width: 100%;
 				article {
 					border-top: none;
-					padding: 80px 0px;
+					//padding: 80px 0px;
 					.title {
 						margin-left: 0px;
-						font-style: italic;
+						//font-style: italic;
 						font-size: 3em;
 					}
-					&.single-post .title{
-						text-align: center;
-						text-decoration: underline;
-					}
+					//&.single-post .title{
+						//text-align: center;
+						//text-decoration: underline;
+					//}
 					.entry-content {
 						margin-left: 0px;
 						line-height: 1.4em;
@@ -131,20 +131,18 @@ body {
 						}
 						h2 {
 							font-size: 1.3em;
-							color: #333;
-							margin-top: 30px;
-							margin-bottom: -20px;
-							font-weight: bold;
+							color: #574C4C;
+              border-bottom: none;
 						}
 						h2::before {
 							border-bottom: none;
 						}
 						blockquote {
 							border-left: 5px solid $greyshade;
-							background: #F7F7F7;
-							p {
-								margin-top: 0px; 
-							}
+							background: #FCFCFC;
+							//p {
+								//margin-top: 0px; 
+							//}
 						}
 						table {
 							line-height: 1.2em;
