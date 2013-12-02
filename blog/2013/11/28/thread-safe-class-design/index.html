@@ -137,6 +137,136 @@
 
 <p>这就是说，在你的程序中，这也许是有效的情况，其中一个线程安全的可变的字典可以很轻便的。而这要归功于类簇(class cluster)的解决方案，它可以很容易的写一个。</p>
 
+<h3>原子属性(properties)</h3>
+
+<p>有没有想过Apple如何处理原子设置/获取属性？现在你可能已经听说过spinlocks, semaphores, locks, @synchronized &ndash; 那Apple使用什么？幸运的是，Objective-C运行是公开的，所以我们可以看看幕后发生了什么。</p>
+
+<p>一个非原子属性的setter方法可能看起来像这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setUserName:</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">userName</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">userName</span> <span class="o">!=</span> <span class="n">_userName</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="p">[</span><span class="n">userName</span> <span class="n">retain</span><span class="p">];</span>
+</span><span class='line'>          <span class="p">[</span><span class="n">_userName</span> <span class="n">release</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">_userName</span> <span class="o">=</span> <span class="n">userName</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是手动retain/release变量，然而用ARC生成的代码看起来类似。让我们看看这段代码，很显然当<code>setUserName:</code>被同时调用就遇到了麻烦。我们最终可能会释放<code>_userName</code>两次，这会破坏内存，并且导致难以发现的bug。</p>
+
+<p>对于任意一个非手工实现的property内部发生的是，编译器生成一个调用<code>objc_setProperty_non_gc(id self, SEL _cmd, ptrdiff_t offset, id newValue, BOOL atomic, signed char shouldCopy)</code>。在我们的例子中，调用参数是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">objc_setProperty_non_gc</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">_cmd</span><span class="p">,</span>
+</span><span class='line'>  <span class="p">(</span><span class="n">ptrdiff_t</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">_userName</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">ptrdiff_t</span><span class="p">)(</span><span class="n">self</span><span class="p">),</span> <span class="n">userName</span><span class="p">,</span> <span class="n">NO</span><span class="p">,</span> <span class="n">NO</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ptrdiff_t</code>你可能看起来很怪异，但最终它是一个简单的指针算法，因为一个Objective-C类正是另一个C结构。</p>
+
+<p><code>objc_setProperty</code>调用下面的方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">reallySetProperty</span><span class="p">(</span><span class="kt">id</span> <span class="n">self</span><span class="p">,</span> <span class="kt">SEL</span> <span class="n">_cmd</span><span class="p">,</span> <span class="kt">id</span> <span class="n">newValue</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">ptrdiff_t</span> <span class="n">offset</span><span class="p">,</span> <span class="n">bool</span> <span class="n">atomic</span><span class="p">,</span> <span class="n">bool</span> <span class="n">copy</span><span class="p">,</span> <span class="n">bool</span> <span class="n">mutableCopy</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">id</span> <span class="n">oldValue</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">id</span> <span class="o">*</span><span class="n">slot</span> <span class="o">=</span> <span class="p">(</span><span class="kt">id</span><span class="o">*</span><span class="p">)</span> <span class="p">((</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">self</span> <span class="o">+</span> <span class="n">offset</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">copy</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">newValue</span> <span class="o">=</span> <span class="p">[</span><span class="n">newValue</span> <span class="nl">copyWithZone:</span><span class="nb">NULL</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">mutableCopy</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">newValue</span> <span class="o">=</span> <span class="p">[</span><span class="n">newValue</span> <span class="nl">mutableCopyWithZone:</span><span class="nb">NULL</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">slot</span> <span class="o">==</span> <span class="n">newValue</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">newValue</span> <span class="o">=</span> <span class="n">objc_retain</span><span class="p">(</span><span class="n">newValue</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">atomic</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">oldValue</span> <span class="o">=</span> <span class="o">*</span><span class="n">slot</span><span class="p">;</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">slot</span> <span class="o">=</span> <span class="n">newValue</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">spin_lock_t</span> <span class="o">*</span><span class="n">slotlock</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">PropertyLocks</span><span class="p">[</span><span class="n">GOODHASH</span><span class="p">(</span><span class="n">slot</span><span class="p">)];</span>
+</span><span class='line'>        <span class="n">_spin_lock</span><span class="p">(</span><span class="n">slotlock</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">oldValue</span> <span class="o">=</span> <span class="o">*</span><span class="n">slot</span><span class="p">;</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">slot</span> <span class="o">=</span> <span class="n">newValue</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">_spin_unlock</span><span class="p">(</span><span class="n">slotlock</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">objc_release</span><span class="p">(</span><span class="n">oldValue</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>除了相当有趣的名字，这种方法其实是相当简单，并使用128个在PropertyLocks可用的spinlocks其中之一。这是一个务实的和快速的解决方案 &ndash; 最坏的情况是，因为一个哈希冲突，一个setter不得不等待一个不相关的setter结束。</p>
+
+<p>虽然这些方法在任何公共头文件都没有声明，但可以手动调用它们。我并不是说这是一个好主意，但如果你想要原子属性和想要同时实现setter，知道这些是很有趣的并且可能会相当有用。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Manually declare runtime methods.</span>
+</span><span class='line'><span class="k">extern</span> <span class="kt">void</span> <span class="nf">objc_setProperty</span><span class="p">(</span><span class="kt">id</span> <span class="n">self</span><span class="p">,</span> <span class="kt">SEL</span> <span class="n">_cmd</span><span class="p">,</span> <span class="n">ptrdiff_t</span> <span class="n">offset</span><span class="p">,</span>
+</span><span class='line'>  <span class="kt">id</span> <span class="n">newValue</span><span class="p">,</span> <span class="kt">BOOL</span> <span class="n">atomic</span><span class="p">,</span> <span class="kt">BOOL</span> <span class="n">shouldCopy</span><span class="p">);</span>
+</span><span class='line'><span class="k">extern</span> <span class="kt">id</span> <span class="nf">objc_getProperty</span><span class="p">(</span><span class="kt">id</span> <span class="n">self</span><span class="p">,</span> <span class="kt">SEL</span> <span class="n">_cmd</span><span class="p">,</span> <span class="n">ptrdiff_t</span> <span class="n">offset</span><span class="p">,</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">atomic</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define PSTAtomicRetainedSet(dest, src) objc_setProperty(self, _cmd, </span>
+</span><span class='line'>  <span class="p">(</span><span class="n">ptrdiff_t</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">dest</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">ptrdiff_t</span><span class="p">)(</span><span class="n">self</span><span class="p">),</span> <span class="n">src</span><span class="p">,</span> <span class="n">YES</span><span class="p">,</span> <span class="n">NO</span><span class="p">)</span>
+</span><span class='line'><span class="cp">#define PSTAtomicAutoreleasedGet(src) objc_getProperty(self, _cmd, </span>
+</span><span class='line'>  <span class="p">(</span><span class="n">ptrdiff_t</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">src</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">ptrdiff_t</span><span class="p">)(</span><span class="n">self</span><span class="p">),</span> <span class="n">YES</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://gist.github.com/steipete/5928690">参考这个gist</a>全部片段包括处理结构的代码。但是请记住我们不建议使用这个。</p>
+
+<h3>@synchronized如何？</h3>
+
+<p>你可能很好奇为什么Apple不使用一个已有的运行时特性<code>@synchronized(self)</code>来做属性锁。一旦你看了源代码，你将明白这还有很多事要做。Apple采用最多三个上锁/解锁序列，部分原因是他们还增加了异常展开(exception unwinding)。比起更加快速的spinlock方案，这个会慢一些。由于设置属性通常是相当快的，spinlocks是最完美的选择。当你需要确保没有代码死锁而抛出异常，<code>@synchronized(self)</code>是个好的选择。</p>
+
 <p>未完待续。。。</p>
 </div>
 
