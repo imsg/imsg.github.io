@@ -55,5 +55,88 @@ Apple有一个很好的概述文档，对iOS和Mac上列出线程安全最常见
 
 这就是说，在你的程序中，这也许是有效的情况，其中一个线程安全的可变的字典可以很轻便的。而这要归功于类簇(class cluster)的解决方案，它可以很容易的写一个。
 
+###原子属性(properties)
+
+有没有想过Apple如何处理原子设置/获取属性？现在你可能已经听说过spinlocks, semaphores, locks, @synchronized - 那Apple使用什么？幸运的是，Objective-C运行是公开的，所以我们可以看看幕后发生了什么。
+
+一个非原子属性的setter方法可能看起来像这样：
+
+```objc
+- (void)setUserName:(NSString *)userName {
+      if (userName != _userName) {
+          [userName retain];
+          [_userName release];
+          _userName = userName;
+      }
+}
+```
+
+这是手动retain/release变量，然而用ARC生成的代码看起来类似。让我们看看这段代码，很显然当`setUserName:`被同时调用就遇到了麻烦。我们最终可能会释放`_userName`两次，这会破坏内存，并且导致难以发现的bug。
+
+对于任意一个非手工实现的property内部发生的是，编译器生成一个调用` objc_setProperty_non_gc(id self, SEL _cmd, ptrdiff_t offset, id newValue, BOOL atomic, signed char shouldCopy)`。在我们的例子中，调用参数是这样的：
+
+```objc
+objc_setProperty_non_gc(self, _cmd, 
+  (ptrdiff_t)(&_userName) - (ptrdiff_t)(self), userName, NO, NO);
+```
+
+`ptrdiff_t`你可能看起来很怪异，但最终它是一个简单的指针算法，因为一个Objective-C类正是另一个C结构。
+
+`objc_setProperty`调用下面的方法：
+
+```objc
+static inline void reallySetProperty(id self, SEL _cmd, id newValue, 
+  ptrdiff_t offset, bool atomic, bool copy, bool mutableCopy) 
+{
+    id oldValue;
+    id *slot = (id*) ((char*)self + offset);
+
+    if (copy) {
+        newValue = [newValue copyWithZone:NULL];
+    } else if (mutableCopy) {
+        newValue = [newValue mutableCopyWithZone:NULL];
+    } else {
+        if (*slot == newValue) return;
+        newValue = objc_retain(newValue);
+    }
+
+    if (!atomic) {
+        oldValue = *slot;
+        *slot = newValue;
+    } else {
+        spin_lock_t *slotlock = &PropertyLocks[GOODHASH(slot)];
+        _spin_lock(slotlock);
+        oldValue = *slot;
+        *slot = newValue;        
+        _spin_unlock(slotlock);
+    }
+
+    objc_release(oldValue);
+}
+```
+
+除了相当有趣的名字，这种方法其实是相当简单，并使用128个在PropertyLocks可用的spinlocks其中之一。这是一个务实的和快速的解决方案 - 最坏的情况是，因为一个哈希冲突，一个setter不得不等待一个不相关的setter结束。
+
+虽然这些方法在任何公共头文件都没有声明，但可以手动调用它们。我并不是说这是一个好主意，但如果你想要原子属性和想要同时实现setter，知道这些是很有趣的并且可能会相当有用。
+
+```objc
+// Manually declare runtime methods.
+extern void objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, 
+  id newValue, BOOL atomic, BOOL shouldCopy);
+extern id objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, 
+  BOOL atomic);
+
+#define PSTAtomicRetainedSet(dest, src) objc_setProperty(self, _cmd, 
+  (ptrdiff_t)(&dest) - (ptrdiff_t)(self), src, YES, NO) 
+#define PSTAtomicAutoreleasedGet(src) objc_getProperty(self, _cmd, 
+  (ptrdiff_t)(&src) - (ptrdiff_t)(self), YES)
+```
+
+[参考这个gist](https://gist.github.com/steipete/5928690)全部片段包括处理结构的代码。但是请记住我们不建议使用这个。
+
+###@synchronized如何？
+
+你可能很好奇为什么Apple不使用一个已有的运行时特性`@synchronized(self)`来做属性锁。一旦你看了源代码，你将明白这还有很多事要做。Apple采用最多三个上锁/解锁序列，部分原因是他们还增加了异常展开(exception unwinding)。比起更加快速的spinlock方案，这个会慢一些。由于设置属性通常是相当快的，spinlocks是最完美的选择。当你需要确保没有代码死锁而抛出异常，`@synchronized(self)`是个好的选择。
+
 
 未完待续。。。
