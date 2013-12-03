@@ -13,6 +13,8 @@ categories: [iOS]
 * NSManagedObjects不是线程安全的，但是NSManagedObjectIDs是线程安全的
 * 如果在background保存，则需要通过core data Notification将changes同步到其他contexts
 
+<!--more-->
+
 ![CORE DATA STACK](http://imsg.github.com/images/2013/core-data-stack-complex.png)
 
 参考：  
