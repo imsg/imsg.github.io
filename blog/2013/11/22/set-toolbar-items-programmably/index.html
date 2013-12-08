@@ -115,6 +115,11 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+
+
+<!--more-->
+
+
 <p>在此代码运行的时候，如果当前的view controller已经不是代码的view controller时，这段代码依然会执行，从而把当前view controller的toolbar给更新了，导致toolbar乱了。</p>
 
 <p>查了一下UIViewController的API，发现其自带设置toolbar item的方法：<code>- (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated</code></p>

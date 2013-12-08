@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dev_tips | I'm Anson]]></title>
   <link href="http://imsg.github.io/blog/categories/dev-tips/atom.xml" rel="self"/>
   <link href="http://imsg.github.io/"/>
-  <updated>2013-12-02T23:16:03+08:00</updated>
+  <updated>2013-12-08T21:43:39+08:00</updated>
   <id>http://imsg.github.io/</id>
   <author>
     <name><![CDATA[Anson Zhao]]></name>
@@ -26,6 +26,9 @@
 UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 self.navigationController.toolbar.items = @[self.markButton, spaceItem, self.moveButton, spaceItem, self.trashButton];
 </code></p>
+
+<!--more-->
+
 
 <p>在此代码运行的时候，如果当前的view controller已经不是代码的view controller时，这段代码依然会执行，从而把当前view controller的toolbar给更新了，导致toolbar乱了。</p>
 
