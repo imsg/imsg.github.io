@@ -15,6 +15,8 @@ UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemIte
 self.navigationController.toolbar.items = @[self.markButton, spaceItem, self.moveButton, spaceItem, self.trashButton];
 ```
 
+<!--more-->
+
 在此代码运行的时候，如果当前的view controller已经不是代码的view controller时，这段代码依然会执行，从而把当前view controller的toolbar给更新了，导致toolbar乱了。
 
 查了一下UIViewController的API，发现其自带设置toolbar item的方法：`- (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated`
