@@ -30,7 +30,7 @@ categories: [iOS, 翻译]
 UIKit非线程安全是Apple有意的设计决定。从性能方面来说线程安全没有太多好处，它实际上会使很多事情变慢。而事实上UIKit和主线程捆绑使它很容易编写并发程序和使用UIKit。你所需要做的就是确保总是在主线程上调用UIKit。
 
 
-
+<!--more-->
 ### 为什么UIKit不是线程安全的？
 
 像UIKit这样大的框架上确保线程安全是一个重大的任务，会带来巨大的成本。改变非原子property为原子property只是所需要改变的一小部分。通常你想要一次改变多个property，然后才能看到更改的结果。对于这一点，Apple不得不暴露一个方法，像CoreData的`performBlock:`和同步的方法`performBlockAndWait:`。如果你考虑大多数调用UIKit类是有关配置(configuration)，使他们线程安全更没有意义。
@@ -55,7 +55,7 @@ Apple有一个很好的概述文档，对iOS和Mac上列出线程安全最常见
 
 这就是说，在你的程序中，这也许是有效的情况，其中一个线程安全的可变的字典可以很轻便的。而这要归功于类簇(class cluster)的解决方案，它可以很容易的写一个。
 
-###原子属性(properties)
+#原子属性(properties)
 
 有没有想过Apple如何处理原子设置/获取属性？现在你可能已经听说过spinlocks, semaphores, locks, @synchronized - 那Apple使用什么？幸运的是，Objective-C运行是公开的，所以我们可以看看幕后发生了什么。
 
@@ -138,5 +138,121 @@ extern id objc_getProperty(id self, SEL _cmd, ptrdiff_t offset,
 
 你可能很好奇为什么Apple不使用一个已有的运行时特性`@synchronized(self)`来做属性锁。一旦你看了源代码，你将明白这还有很多事要做。Apple采用最多三个上锁/解锁序列，部分原因是他们还增加了异常展开(exception unwinding)。比起更加快速的spinlock方案，这个会慢一些。由于设置属性通常是相当快的，spinlocks是最完美的选择。当你需要确保没有代码死锁而抛出异常，`@synchronized(self)`是个好的选择。
 
+#你自己的类
+
+单独使用原子属性不会让你的类线程安全的。它只会保护你在setter中免受竞态条件(race conditions)，但不会保护你的应用程序逻辑。请考虑以下代码片段：
+
+```objc
+if (self.contents) {
+    CFAttributedStringRef stringRef = CFAttributedStringCreate(NULL, 
+      (__bridge CFStringRef)self.contents, NULL);
+    // draw string
+}
+```
+
+我在PSPDFKit早早就犯了这个错误。偶尔，当`contents`属性检查后被设置为`nil`，该应用程序以EXC_BAD_ACCESS崩溃了。对这个问题简单的解决办法是捕获变量：
+
+```objc
+NSString *contents = self.contents;
+if (contents) {
+    CFAttributedStringRef stringRef = CFAttributedStringCreate(NULL, 
+      (__bridge CFStringRef)contents, NULL);
+    // draw string
+}
+```
+
+这样就解决了问题，但在大多数情况下，它不是那么简单的。试想一下，我们也有一个`textColor`属性，我们在一个线程中改变两次属性。那么，我们的渲染线程可能最终会使用有旧颜色值的新内容，我们得到一个奇怪的组合。这就是为什么Core Data在一个线程或队列中绑定模型对象。
+
+对于这个问题没有一个统一标准的解决方案。使用不可变的模型是一个解决方案，但它有它自己的问题。另一种方法是限制在主线程或一个特定的队列更改现有对象，而在工作线程中使用之前生成的副本。我推荐Jonathan Sterling在<Lightweight Immutability in Objective-C>文章中为解决这个问题更多的想法。
+
+简单的解决方法是使用`@synchronize`。其他的是非常，非常有可能让你陷入困境。更聪明的人一次又一次地在其他方法上失败了。
+
+###实用的线程安全设计
+
+在试图做线程安全之前，认真考虑是否是必要的。请确保它不是过早的优化。如果它像是一个配置类，考虑线程安全是没有意义的。更好的方法是抛出一些断言来确保它的正确使用：
+
+```objc
+void PSPDFAssertIfNotMainThread(void) {
+    NSAssert(NSThread.isMainThread, 
+      @"Error: Method needs to be called on the main thread. %@", 
+      [NSThread callStackSymbols]);
+}
+```
+
+现在肯定有线程安全的代码，一个很好的例子就是缓存类。一个好的方法是使用一个并行dispatch_queue为读/写锁，以最大限度地提高性能，并尝试只锁定那些真正需要的地方。一旦你开始使用多个队列用于锁定不同部位，事情将很快变得棘手。
+
+有时候，你也可以重写你的代码，使特殊的锁不是必需的。考虑这个代码片段，是一个多播委托的形式。 （在许多情况下，使用NSNotifications会更好，但也有有效的多路广播委托用例。）
+
+```objc
+// header
+@property (nonatomic, strong) NSMutableSet *delegates;
+
+// in init
+_delegateQueue = dispatch_queue_create("com.PSPDFKit.cacheDelegateQueue", 
+  DISPATCH_QUEUE_CONCURRENT);
+
+- (void)addDelegate:(id<PSPDFCacheDelegate>)delegate {
+    dispatch_barrier_async(_delegateQueue, ^{
+        [self.delegates addObject:delegate];
+    });
+}
+
+- (void)removeAllDelegates {
+    dispatch_barrier_async(_delegateQueue, ^{
+        self.delegates removeAllObjects];
+    });
+}
+
+- (void)callDelegateForX {
+    dispatch_sync(_delegateQueue, ^{
+        [self.delegates enumerateObjectsUsingBlock:^(id<PSPDFCacheDelegate> delegate, NSUInteger idx, BOOL *stop) {
+            // Call delegate
+        }];
+    });
+}
+```
+
+除非`addDelegate:`或`removeDelegate:`每秒被调用上千次，否则下面是更简洁的方法：
+
+```objc
+// header
+@property (atomic, copy) NSSet *delegates;
+
+- (void)addDelegate:(id<PSPDFCacheDelegate>)delegate {
+    @synchronized(self) {
+        self.delegates = [self.delegates setByAddingObject:delegate];
+    }
+}
+
+- (void)removeAllDelegates {
+    self.delegates = nil;
+}
+
+- (void)callDelegateForX {
+    [self.delegates enumerateObjectsUsingBlock:^(id<PSPDFCacheDelegate> delegate, NSUInteger idx, BOOL *stop) {
+        // Call delegate
+    }];
+}
+```
+
+当然，这个例子有点儿认为构造的，它可以简单的局限于在主线程更改。但对于许多数据结构，在修改方法中创建不可变的副本是值得的，让广大的应用程序逻辑并不需要处理过多的锁定。注意，我们仍然要在`addDelegate:`申请锁，否则如果委托对象被来自不同的线程同时调用，它可能会迷失。
+
+#GCD的陷阱
+
+对于大部分的锁定需求，GCD是完美的。这很简单，很快速，并且它的基于块的API使得它更难偶然做出不平衡锁。不过，也有不少缺陷，我们将要在这里探索其中一些。
+
+###使用GCD作为递归锁
+
+GCD是一个队列来序列化访问共享资源。这可以被用于锁定，但它比`@synchronized`大不相同。 GCD队列是不可重入的 - 这将打破队列特性。许多人试图使用`dispatch_get_current_queue()`来作为替代方案，这是一个坏主意。Apple在iOS6中废弃此方法自然有它的原因。
+
+```objc
+// This is a bad idea.
+inline void pst_dispatch_sync_reentrant(dispatch_queue_t queue, 
+  dispatch_block_t block) 
+{
+    dispatch_get_current_queue() == queue ? block() 
+                                          : dispatch_sync(queue, block);
+}
+```
 
 未完待续。。。
