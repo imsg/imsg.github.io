@@ -30,8 +30,6 @@ categories: [iOS, 翻译]
 UIKit非线程安全是Apple有意的设计决定。从性能方面来说线程安全没有太多好处，它实际上会使很多事情变慢。而事实上UIKit和主线程捆绑使它很容易编写并发程序和使用UIKit。你所需要做的就是确保总是在主线程上调用UIKit。
 
 <!--more-->
-
-<!--more-->
 ### 为什么UIKit不是线程安全的？
 
 像UIKit这样大的框架上确保线程安全是一个重大的任务，会带来巨大的成本。改变非原子property为原子property只是所需要改变的一小部分。通常你想要一次改变多个property，然后才能看到更改的结果。对于这一点，Apple不得不暴露一个方法，像CoreData的`performBlock:`和同步的方法`performBlockAndWait:`。如果你考虑大多数调用UIKit类是有关配置(configuration)，使他们线程安全更没有意义。
@@ -256,4 +254,36 @@ inline void pst_dispatch_sync_reentrant(dispatch_queue_t queue,
 }
 ```
 
-未完待续。。。
+测试当前队列简单的解决方案可能起作用，但当你的代码变得更加复杂的时候，你可能会在同一时间对多个队列上锁，它会失败。一旦你是这种情况，你几乎肯定会遇到死锁。当然，人们可以使用`dispatch_get_specific()`，它会遍历整个队列的层次结构来测试特定的队列。对于您将不得不编写应用此元数据的自定义队列的构造函数。不要走那条路，很多使用情况下，NSRecursiveLock是更好的解决方案。
+
+###dispatch_async的固定时序问题
+
+在UIKit中有一些时序问题？大多数时候，这将是完美的“修复”：
+
+```objc
+dispatch_async(dispatch_get_main_queue(), ^{
+    // Some UIKit call that had timing issues but works fine 
+    // in the next runloop.
+    [self updatePopoverSize];
+});
+```
+
+相信我，不要这样做。这将在以后缠着你因为你的应用程序变得越来越大。这是超级难调试，并因为“时序问题”当你需要调度越来越多，事情很快会土崩瓦解。看你的代码，找到适当调用的位置（例如viewWillAppear而不是viewDidLoad中）。在我的代码库仍然有一些黑客方式，但大部分都会被适当的记录并且提交问题。
+
+请记住，这真不是GCD特有的，但它是一个常见的反模式，只是GCD很容易做到。你可以使用同样的才智`performSelector:afterDelay:`，其中下一个runloop的延迟是0.f。
+
+###在性能关键代码中使用混合dispatch_sync和dispatch_async
+
+那个花了我一段时间才弄清楚。在PSPDFKit中有一个使用LRU列表来跟踪图像访问的缓存类。当你通过页面滚动，它会被调用很多次。最初的实现中对于可用的访问使用dispatch_sync，用dispatch_async来更新LRU位置。这导致帧速率远远低于每秒60帧的目标。
+
+当你的应用程序中运行的其他代码阻止GCD的线程，它可能需要一段时间，直到调度管理器发现一个线程来执行dispatch_async代码 - 在那之前，你的同步调用将被阻塞。即使，在这个例子中，在异步情况下执行的顺序并不重要，没有简单的方法来告诉给GCD 。读/写锁在这里不会有任何帮助，因为异步流程非常肯定需要执行一个写屏障，在这期间你的所有读操作都会被锁定。教训：如果滥用， dispatch_async可以是昂贵的。使用它来锁操作要非常小心。
+
+###使用dispatch_async来调度内存密集型操作
+我们已经谈了很多关于NSOperations ，而且使用更高层的API通常是一个好主意。如果你处理的是内存密集型操作的工作块，这是尤其如此。
+
+在旧版本的PSPDFKit中，我用了一个GCD队列来调度写缓存JPG图像到磁盘。当视网膜的iPad出来了，这开始引起麻烦。分辨率加倍，比起渲染图像，对图像数据进行编码需要更长的时间。因此，操作堆积在队列中，当系统繁忙它可能会因为内存耗尽而崩溃。
+
+没有办法来看到有多少操作在排队里（除非你手动添加代码来追踪这一点） ，而且也没有内置的方式来取消操作万一收到内存不足的通知。切换到NSOperations使代码更加可调试，并允许这一切都无需编写手动管理代码。
+
+当然也有一些注意事项，例如你不能在你的NSOperationQueue上设置一个目标队列（如为节流的I/O而`DISPATCH_QUEUE_PRIORITY_BACKGROUND` ） 。但是，这是一个为可调试性付出的很小的代价，也防止你陷入类似问题，如优先级反转。我甚至建议使用漂亮的NSBlockOperation API，并建议NSOperation的真正子类，包括描述的实现。这是更多的工作，但后来，有一个方法出奇的有用是打印所有运行/挂起的操作。
+
