@@ -1,0 +1,809 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>列举所有UIFont字体 - I'm Anson</title>
+	<meta name="author" content="Anson Zhao">
+
+	
+	<meta name="description" content="列举所有UIFont字体 UI开发中总是需要了解iOS中提供的所有字体，UIFont接口+ (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
+也是通过字体名称来得到UIFont对象。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="I'm Anson" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://imsg.github.io/blog/2013/12/14/list-all-uifont/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src="http://www.gravatar.com/avatar/c5b455f7ab7dbc4c583090876a47e0cd?s=160" alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+<hgroup>
+  <h1><a href="/">I'm Anson</a></h1>
+  
+    <p class="subtitle">无他，唯手熟尔</p>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    iOS开发者，曾经从事Symbian开发
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+			<a class="weibo" href="http://www.weibo.com/imsg" title="Weibo">Weibo</a>
+		
+		
+			<a class="facebook" href="http://www.facebook.com/anson7956" title="Facebook">Facebook</a>
+		
+		
+		
+		
+		
+		
+		
+			<a class="linkedin" href="http://www.linkedin.com/in/azhao" title="LinkedIn">LinkedIn</a>
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">列举所有UIFont字体</h1>
+	<div class="entry-content" itemprop="articleBody"><p>UI开发中总是需要了解iOS中提供的所有字体，UIFont接口<code>+ (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
+</code>也是通过字体名称来得到UIFont对象。</p>
+
+<p>简单写了几行代码就可以列举出所有字体。</p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSString</span> <span class="o">*</span><span class="n">family</span><span class="p">,</span> <span class="o">*</span><span class="n">font</span><span class="p">;</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">family</span> <span class="k">in</span> <span class="p">[</span><span class="n">UIFont</span> <span class="n">familyNames</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Family: %@&quot;</span><span class="p">,</span> <span class="n">family</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">font</span> <span class="k">in</span> <span class="p">[</span><span class="n">UIFont</span> <span class="nl">fontNamesForFamilyName:</span><span class="n">family</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;</span><span class="se">\t\t</span><span class="s">Font: %@&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>打印出结果如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="nl">Family:</span> <span class="n">Thonburi</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Thonburi</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Thonburi</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Thonburi</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Snell</span> <span class="n">Roundhand</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">SnellRoundhand</span><span class="o">-</span><span class="n">Black</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">SnellRoundhand</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">SnellRoundhand</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Academy</span> <span class="n">Engraved</span> <span class="n">LET</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AcademyEngravedLetPlain</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Marker</span> <span class="n">Felt</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">MarkerFelt</span><span class="o">-</span><span class="n">Thin</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">MarkerFelt</span><span class="o">-</span><span class="n">Wide</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Avenir</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Heavy</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Oblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Black</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Book</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">BlackOblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">HeavyOblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">MediumOblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">LightOblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">Roman</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Avenir</span><span class="o">-</span><span class="n">BookOblique</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Geeza</span> <span class="n">Pro</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GeezaPro</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GeezaPro</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GeezaPro</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Arial</span> <span class="n">Rounded</span> <span class="n">MT</span> <span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ArialRoundedMTBold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Trebuchet</span> <span class="n">MS</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Trebuchet</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TrebuchetMS</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TrebuchetMS</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TrebuchetMS</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Arial</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ArialMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Arial</span><span class="o">-</span><span class="n">BoldItalicMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Arial</span><span class="o">-</span><span class="n">ItalicMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Arial</span><span class="o">-</span><span class="n">BoldMT</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Marion</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Marion</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Marion</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Marion</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Menlo</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Menlo</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Menlo</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Menlo</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Menlo</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Malayalam</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">MalayalamSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">MalayalamSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Kannada</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">KannadaSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">KannadaSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Gurmukhi</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GurmukhiMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GurmukhiMN</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Bodoni</span> <span class="mi">72</span> <span class="n">Oldstyle</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoOSITCTT</span><span class="o">-</span><span class="n">BookIt</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoOSITCTT</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoOSITCTT</span><span class="o">-</span><span class="n">Book</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Bradley</span> <span class="n">Hand</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BradleyHandITCTT</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Cochin</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Cochin</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Cochin</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Cochin</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Cochin</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Sinhala</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">SinhalaSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">SinhalaSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Hiragino</span> <span class="n">Kaku</span> <span class="n">Gothic</span> <span class="n">ProN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HiraKakuProN</span><span class="o">-</span><span class="n">W6</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HiraKakuProN</span><span class="o">-</span><span class="n">W3</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Iowan</span> <span class="n">Old</span> <span class="n">Style</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">IowanOldStyle</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">IowanOldStyle</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">IowanOldStyle</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">IowanOldStyle</span><span class="o">-</span><span class="n">Roman</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Damascus</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DamascusBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Damascus</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DamascusMedium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DamascusSemiBold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Al</span> <span class="n">Nile</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AlNile</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AlNile</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Farah</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Farah</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Papyrus</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Papyrus</span><span class="o">-</span><span class="n">Condensed</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Papyrus</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Verdana</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Verdana</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Verdana</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Verdana</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Verdana</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Zapf</span> <span class="n">Dingbats</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ZapfDingbatsITC</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">DIN</span> <span class="n">Condensed</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DINCondensed</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Avenir</span> <span class="n">Next</span> <span class="n">Condensed</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">MediumItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">UltraLightItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">UltraLight</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">HeavyItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">Heavy</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">DemiBoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">DemiBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNextCondensed</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Courier</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Courier</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Courier</span><span class="o">-</span><span class="n">Oblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Courier</span><span class="o">-</span><span class="n">BoldOblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Courier</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Hoefler</span> <span class="n">Text</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HoeflerText</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HoeflerText</span><span class="o">-</span><span class="n">BlackItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HoeflerText</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HoeflerText</span><span class="o">-</span><span class="n">Black</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Euphemia</span> <span class="n">UCAS</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">EuphemiaUCAS</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">EuphemiaUCAS</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">EuphemiaUCAS</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Helvetica</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Helvetica</span><span class="o">-</span><span class="n">Oblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Helvetica</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Helvetica</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Helvetica</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Helvetica</span><span class="o">-</span><span class="n">BoldOblique</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Helvetica</span><span class="o">-</span><span class="n">LightOblique</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Hiragino</span> <span class="n">Mincho</span> <span class="n">ProN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HiraMinProN</span><span class="o">-</span><span class="n">W6</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HiraMinProN</span><span class="o">-</span><span class="n">W3</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Bodoni</span> <span class="n">Ornaments</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniOrnamentsITCTT</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Superclarendon</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">BlackItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">LightItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Superclarendon</span><span class="o">-</span><span class="n">Black</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Mishafi</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DiwanMishafi</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Optima</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Optima</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Optima</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Optima</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Optima</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Optima</span><span class="o">-</span><span class="n">ExtraBlack</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Gujarati</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GujaratiSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GujaratiSangamMN</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Devanagari</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DevanagariSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DevanagariSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Apple</span> <span class="n">Color</span> <span class="n">Emoji</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleColorEmoji</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Savoye</span> <span class="n">LET</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">SavoyeLetPlain</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Kailasa</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Kailasa</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Kailasa</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Times</span> <span class="n">New</span> <span class="n">Roman</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TimesNewRomanPS</span><span class="o">-</span><span class="n">BoldItalicMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TimesNewRomanPSMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TimesNewRomanPS</span><span class="o">-</span><span class="n">BoldMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TimesNewRomanPS</span><span class="o">-</span><span class="n">ItalicMT</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Telugu</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TeluguSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TeluguSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Heiti</span> <span class="n">SC</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">STHeitiSC</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">STHeitiSC</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Apple</span> <span class="n">SD</span> <span class="n">Gothic</span> <span class="n">Neo</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleSDGothicNeo</span><span class="o">-</span><span class="n">Thin</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleSDGothicNeo</span><span class="o">-</span><span class="n">SemiBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleSDGothicNeo</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleSDGothicNeo</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleSDGothicNeo</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AppleSDGothicNeo</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Futura</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Futura</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Futura</span><span class="o">-</span><span class="n">CondensedMedium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Futura</span><span class="o">-</span><span class="n">MediumItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Futura</span><span class="o">-</span><span class="n">CondensedExtraBold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Bodoni</span> <span class="mi">72</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoITCTT</span><span class="o">-</span><span class="n">Book</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoITCTT</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoITCTT</span><span class="o">-</span><span class="n">BookIta</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Baskerville</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Baskerville</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Baskerville</span><span class="o">-</span><span class="n">SemiBoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Baskerville</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Baskerville</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Baskerville</span><span class="o">-</span><span class="n">SemiBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Baskerville</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Symbol</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Symbol</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Heiti</span> <span class="n">TC</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">STHeitiTC</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">STHeitiTC</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Copperplate</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Copperplate</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Copperplate</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Copperplate</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Party</span> <span class="n">LET</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">PartyLetPlain</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">American</span> <span class="n">Typewriter</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AmericanTypewriter</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AmericanTypewriter</span><span class="o">-</span><span class="n">CondensedLight</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AmericanTypewriter</span><span class="o">-</span><span class="n">CondensedBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AmericanTypewriter</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AmericanTypewriter</span><span class="o">-</span><span class="n">Condensed</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AmericanTypewriter</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Chalkboard</span> <span class="n">SE</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ChalkboardSE</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ChalkboardSE</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ChalkboardSE</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Avenir</span> <span class="n">Next</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">MediumItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">UltraLight</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">DemiBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">HeavyItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">Heavy</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">UltraLightItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">Regular</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">AvenirNext</span><span class="o">-</span><span class="n">DemiBoldItalic</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Bangla</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BanglaSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BanglaSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Noteworthy</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Noteworthy</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Noteworthy</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Zapfino</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Zapfino</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Tamil</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TamilSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">TamilSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Chalkduster</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Chalkduster</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Arial</span> <span class="n">Hebrew</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ArialHebrew</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ArialHebrew</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">ArialHebrew</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Georgia</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Georgia</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Georgia</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Georgia</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Georgia</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Helvetica</span> <span class="n">Neue</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">UltraLightItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">CondensedBold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">MediumItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">Thin</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">Medium</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">ThinItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">LightItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">UltraLight</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">HelveticaNeue</span><span class="o">-</span><span class="n">CondensedBlack</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Gill</span> <span class="n">Sans</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GillSans</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GillSans</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GillSans</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GillSans</span><span class="o">-</span><span class="n">Light</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GillSans</span><span class="o">-</span><span class="n">LightItalic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">GillSans</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Palatino</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Palatino</span><span class="o">-</span><span class="n">Roman</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Palatino</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Palatino</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Palatino</span><span class="o">-</span><span class="n">BoldItalic</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Courier</span> <span class="n">New</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">CourierNewPSMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">CourierNewPS</span><span class="o">-</span><span class="n">BoldMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">CourierNewPS</span><span class="o">-</span><span class="n">ItalicMT</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">CourierNewPS</span><span class="o">-</span><span class="n">BoldItalicMT</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Oriya</span> <span class="n">Sangam</span> <span class="n">MN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">OriyaSangamMN</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">OriyaSangamMN</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Didot</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Didot</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Didot</span><span class="o">-</span><span class="n">Italic</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">Didot</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">DIN</span> <span class="n">Alternate</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">DINAlternate</span><span class="o">-</span><span class="n">Bold</span>
+</span><span class='line'><span class="nl">Family:</span> <span class="n">Bodoni</span> <span class="mi">72</span> <span class="n">Smallcaps</span>
+</span><span class='line'>  <span class="nl">Font:</span> <span class="n">BodoniSvtyTwoSCITCTT</span><span class="o">-</span><span class="n">Book</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>字体如下图所示：</p>
+
+<p><img src="http://imsg.github.com/images/2013/UIFont_List.jpg" alt="UIFont" /></p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<!--a class="addthis_counter addthis_pill_style"></a-->
+	</div>
+	
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1362172265438409" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js"></script>
+<!-- UY END -->
+	
+  <!--script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script-->
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - Anson Zhao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

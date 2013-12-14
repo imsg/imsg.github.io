@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dev_tips | I'm Anson]]></title>
   <link href="http://imsg.github.io/blog/categories/dev-tips/atom.xml" rel="self"/>
   <link href="http://imsg.github.io/"/>
-  <updated>2013-12-11T23:58:01+08:00</updated>
+  <updated>2013-12-14T23:35:01+08:00</updated>
   <id>http://imsg.github.io/</id>
   <author>
     <name><![CDATA[Anson Zhao]]></name>
@@ -12,6 +12,562 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[列举所有UIFont字体]]></title>
+    <link href="http://imsg.github.io/blog/2013/12/14/list-all-uifont/"/>
+    <updated>2013-12-14T23:08:00+08:00</updated>
+    <id>http://imsg.github.io/blog/2013/12/14/list-all-uifont</id>
+    <content type="html"><![CDATA[<p>UI开发中总是需要了解iOS中提供的所有字体，UIFont接口<code>+ (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
+</code>也是通过字体名称来得到UIFont对象。</p>
+
+<p>简单写了几行代码就可以列举出所有字体。</p>
+
+<!--more-->
+
+
+<p>```objc
+NSString <em>family, </em>font;
+for (family in [UIFont familyNames]) {</p>
+
+<pre><code>NSLog(@"Family: %@", family);
+for (font in [UIFont fontNamesForFamilyName:family]) {
+    NSLog(@"\t\tFont: %@", font);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>打印出结果如下：</p>
+
+<p>```objc
+Family: Thonburi</p>
+
+<pre><code>Font: Thonburi-Bold
+Font: Thonburi
+Font: Thonburi-Light
+</code></pre>
+
+<p>Family: Snell Roundhand</p>
+
+<pre><code>Font: SnellRoundhand-Black
+Font: SnellRoundhand-Bold
+Font: SnellRoundhand
+</code></pre>
+
+<p>Family: Academy Engraved LET</p>
+
+<pre><code>Font: AcademyEngravedLetPlain
+</code></pre>
+
+<p>Family: Marker Felt</p>
+
+<pre><code>Font: MarkerFelt-Thin
+Font: MarkerFelt-Wide
+</code></pre>
+
+<p>Family: Avenir</p>
+
+<pre><code>Font: Avenir-Heavy
+Font: Avenir-Oblique
+Font: Avenir-Black
+Font: Avenir-Book
+Font: Avenir-BlackOblique
+Font: Avenir-HeavyOblique
+Font: Avenir-Light
+Font: Avenir-MediumOblique
+Font: Avenir-Medium
+Font: Avenir-LightOblique
+Font: Avenir-Roman
+Font: Avenir-BookOblique
+</code></pre>
+
+<p>Family: Geeza Pro</p>
+
+<pre><code>Font: GeezaPro-Bold
+Font: GeezaPro
+Font: GeezaPro-Light
+</code></pre>
+
+<p>Family: Arial Rounded MT Bold</p>
+
+<pre><code>Font: ArialRoundedMTBold
+</code></pre>
+
+<p>Family: Trebuchet MS</p>
+
+<pre><code>Font: Trebuchet-BoldItalic
+Font: TrebuchetMS
+Font: TrebuchetMS-Bold
+Font: TrebuchetMS-Italic
+</code></pre>
+
+<p>Family: Arial</p>
+
+<pre><code>Font: ArialMT
+Font: Arial-BoldItalicMT
+Font: Arial-ItalicMT
+Font: Arial-BoldMT
+</code></pre>
+
+<p>Family: Marion</p>
+
+<pre><code>Font: Marion-Regular
+Font: Marion-Italic
+Font: Marion-Bold
+</code></pre>
+
+<p>Family: Menlo</p>
+
+<pre><code>Font: Menlo-BoldItalic
+Font: Menlo-Regular
+Font: Menlo-Bold
+Font: Menlo-Italic
+</code></pre>
+
+<p>Family: Malayalam Sangam MN</p>
+
+<pre><code>Font: MalayalamSangamMN
+Font: MalayalamSangamMN-Bold
+</code></pre>
+
+<p>Family: Kannada Sangam MN</p>
+
+<pre><code>Font: KannadaSangamMN
+Font: KannadaSangamMN-Bold
+</code></pre>
+
+<p>Family: Gurmukhi MN</p>
+
+<pre><code>Font: GurmukhiMN-Bold
+Font: GurmukhiMN
+</code></pre>
+
+<p>Family: Bodoni 72 Oldstyle</p>
+
+<pre><code>Font: BodoniSvtyTwoOSITCTT-BookIt
+Font: BodoniSvtyTwoOSITCTT-Bold
+Font: BodoniSvtyTwoOSITCTT-Book
+</code></pre>
+
+<p>Family: Bradley Hand</p>
+
+<pre><code>Font: BradleyHandITCTT-Bold
+</code></pre>
+
+<p>Family: Cochin</p>
+
+<pre><code>Font: Cochin-Bold
+Font: Cochin-BoldItalic
+Font: Cochin-Italic
+Font: Cochin
+</code></pre>
+
+<p>Family: Sinhala Sangam MN</p>
+
+<pre><code>Font: SinhalaSangamMN
+Font: SinhalaSangamMN-Bold
+</code></pre>
+
+<p>Family: Hiragino Kaku Gothic ProN</p>
+
+<pre><code>Font: HiraKakuProN-W6
+Font: HiraKakuProN-W3
+</code></pre>
+
+<p>Family: Iowan Old Style</p>
+
+<pre><code>Font: IowanOldStyle-Bold
+Font: IowanOldStyle-BoldItalic
+Font: IowanOldStyle-Italic
+Font: IowanOldStyle-Roman
+</code></pre>
+
+<p>Family: Damascus</p>
+
+<pre><code>Font: DamascusBold
+Font: Damascus
+Font: DamascusMedium
+Font: DamascusSemiBold
+</code></pre>
+
+<p>Family: Al Nile</p>
+
+<pre><code>Font: AlNile-Bold
+Font: AlNile
+</code></pre>
+
+<p>Family: Farah</p>
+
+<pre><code>Font: Farah
+</code></pre>
+
+<p>Family: Papyrus</p>
+
+<pre><code>Font: Papyrus-Condensed
+Font: Papyrus
+</code></pre>
+
+<p>Family: Verdana</p>
+
+<pre><code>Font: Verdana-BoldItalic
+Font: Verdana-Italic
+Font: Verdana
+Font: Verdana-Bold
+</code></pre>
+
+<p>Family: Zapf Dingbats</p>
+
+<pre><code>Font: ZapfDingbatsITC
+</code></pre>
+
+<p>Family: DIN Condensed</p>
+
+<pre><code>Font: DINCondensed-Bold
+</code></pre>
+
+<p>Family: Avenir Next Condensed</p>
+
+<pre><code>Font: AvenirNextCondensed-Regular
+Font: AvenirNextCondensed-MediumItalic
+Font: AvenirNextCondensed-UltraLightItalic
+Font: AvenirNextCondensed-UltraLight
+Font: AvenirNextCondensed-BoldItalic
+Font: AvenirNextCondensed-Italic
+Font: AvenirNextCondensed-Medium
+Font: AvenirNextCondensed-HeavyItalic
+Font: AvenirNextCondensed-Heavy
+Font: AvenirNextCondensed-DemiBoldItalic
+Font: AvenirNextCondensed-DemiBold
+Font: AvenirNextCondensed-Bold
+</code></pre>
+
+<p>Family: Courier</p>
+
+<pre><code>Font: Courier
+Font: Courier-Oblique
+Font: Courier-BoldOblique
+Font: Courier-Bold
+</code></pre>
+
+<p>Family: Hoefler Text</p>
+
+<pre><code>Font: HoeflerText-Regular
+Font: HoeflerText-BlackItalic
+Font: HoeflerText-Italic
+Font: HoeflerText-Black
+</code></pre>
+
+<p>Family: Euphemia UCAS</p>
+
+<pre><code>Font: EuphemiaUCAS
+Font: EuphemiaUCAS-Bold
+Font: EuphemiaUCAS-Italic
+</code></pre>
+
+<p>Family: Helvetica</p>
+
+<pre><code>Font: Helvetica-Oblique
+Font: Helvetica-Light
+Font: Helvetica-Bold
+Font: Helvetica
+Font: Helvetica-BoldOblique
+Font: Helvetica-LightOblique
+</code></pre>
+
+<p>Family: Hiragino Mincho ProN</p>
+
+<pre><code>Font: HiraMinProN-W6
+Font: HiraMinProN-W3
+</code></pre>
+
+<p>Family: Bodoni Ornaments</p>
+
+<pre><code>Font: BodoniOrnamentsITCTT
+</code></pre>
+
+<p>Family: Superclarendon</p>
+
+<pre><code>Font: Superclarendon-Regular
+Font: Superclarendon-BoldItalic
+Font: Superclarendon-Light
+Font: Superclarendon-BlackItalic
+Font: Superclarendon-Italic
+Font: Superclarendon-LightItalic
+Font: Superclarendon-Bold
+Font: Superclarendon-Black
+</code></pre>
+
+<p>Family: Mishafi</p>
+
+<pre><code>Font: DiwanMishafi
+</code></pre>
+
+<p>Family: Optima</p>
+
+<pre><code>Font: Optima-Regular
+Font: Optima-Italic
+Font: Optima-Bold
+Font: Optima-BoldItalic
+Font: Optima-ExtraBlack
+</code></pre>
+
+<p>Family: Gujarati Sangam MN</p>
+
+<pre><code>Font: GujaratiSangamMN-Bold
+Font: GujaratiSangamMN
+</code></pre>
+
+<p>Family: Devanagari Sangam MN</p>
+
+<pre><code>Font: DevanagariSangamMN
+Font: DevanagariSangamMN-Bold
+</code></pre>
+
+<p>Family: Apple Color Emoji</p>
+
+<pre><code>Font: AppleColorEmoji
+</code></pre>
+
+<p>Family: Savoye LET</p>
+
+<pre><code>Font: SavoyeLetPlain
+</code></pre>
+
+<p>Family: Kailasa</p>
+
+<pre><code>Font: Kailasa
+Font: Kailasa-Bold
+</code></pre>
+
+<p>Family: Times New Roman</p>
+
+<pre><code>Font: TimesNewRomanPS-BoldItalicMT
+Font: TimesNewRomanPSMT
+Font: TimesNewRomanPS-BoldMT
+Font: TimesNewRomanPS-ItalicMT
+</code></pre>
+
+<p>Family: Telugu Sangam MN</p>
+
+<pre><code>Font: TeluguSangamMN
+Font: TeluguSangamMN-Bold
+</code></pre>
+
+<p>Family: Heiti SC</p>
+
+<pre><code>Font: STHeitiSC-Medium
+Font: STHeitiSC-Light
+</code></pre>
+
+<p>Family: Apple SD Gothic Neo</p>
+
+<pre><code>Font: AppleSDGothicNeo-Thin
+Font: AppleSDGothicNeo-SemiBold
+Font: AppleSDGothicNeo-Medium
+Font: AppleSDGothicNeo-Regular
+Font: AppleSDGothicNeo-Bold
+Font: AppleSDGothicNeo-Light
+</code></pre>
+
+<p>Family: Futura</p>
+
+<pre><code>Font: Futura-Medium
+Font: Futura-CondensedMedium
+Font: Futura-MediumItalic
+Font: Futura-CondensedExtraBold
+</code></pre>
+
+<p>Family: Bodoni 72</p>
+
+<pre><code>Font: BodoniSvtyTwoITCTT-Book
+Font: BodoniSvtyTwoITCTT-Bold
+Font: BodoniSvtyTwoITCTT-BookIta
+</code></pre>
+
+<p>Family: Baskerville</p>
+
+<pre><code>Font: Baskerville-Bold
+Font: Baskerville-SemiBoldItalic
+Font: Baskerville-BoldItalic
+Font: Baskerville
+Font: Baskerville-SemiBold
+Font: Baskerville-Italic
+</code></pre>
+
+<p>Family: Symbol</p>
+
+<pre><code>Font: Symbol
+</code></pre>
+
+<p>Family: Heiti TC</p>
+
+<pre><code>Font: STHeitiTC-Medium
+Font: STHeitiTC-Light
+</code></pre>
+
+<p>Family: Copperplate</p>
+
+<pre><code>Font: Copperplate
+Font: Copperplate-Light
+Font: Copperplate-Bold
+</code></pre>
+
+<p>Family: Party LET</p>
+
+<pre><code>Font: PartyLetPlain
+</code></pre>
+
+<p>Family: American Typewriter</p>
+
+<pre><code>Font: AmericanTypewriter-Light
+Font: AmericanTypewriter-CondensedLight
+Font: AmericanTypewriter-CondensedBold
+Font: AmericanTypewriter
+Font: AmericanTypewriter-Condensed
+Font: AmericanTypewriter-Bold
+</code></pre>
+
+<p>Family: Chalkboard SE</p>
+
+<pre><code>Font: ChalkboardSE-Light
+Font: ChalkboardSE-Regular
+Font: ChalkboardSE-Bold
+</code></pre>
+
+<p>Family: Avenir Next</p>
+
+<pre><code>Font: AvenirNext-MediumItalic
+Font: AvenirNext-Bold
+Font: AvenirNext-UltraLight
+Font: AvenirNext-DemiBold
+Font: AvenirNext-HeavyItalic
+Font: AvenirNext-Heavy
+Font: AvenirNext-Medium
+Font: AvenirNext-Italic
+Font: AvenirNext-UltraLightItalic
+Font: AvenirNext-BoldItalic
+Font: AvenirNext-Regular
+Font: AvenirNext-DemiBoldItalic
+</code></pre>
+
+<p>Family: Bangla Sangam MN</p>
+
+<pre><code>Font: BanglaSangamMN
+Font: BanglaSangamMN-Bold
+</code></pre>
+
+<p>Family: Noteworthy</p>
+
+<pre><code>Font: Noteworthy-Bold
+Font: Noteworthy-Light
+</code></pre>
+
+<p>Family: Zapfino</p>
+
+<pre><code>Font: Zapfino
+</code></pre>
+
+<p>Family: Tamil Sangam MN</p>
+
+<pre><code>Font: TamilSangamMN
+Font: TamilSangamMN-Bold
+</code></pre>
+
+<p>Family: Chalkduster</p>
+
+<pre><code>Font: Chalkduster
+</code></pre>
+
+<p>Family: Arial Hebrew</p>
+
+<pre><code>Font: ArialHebrew-Bold
+Font: ArialHebrew-Light
+Font: ArialHebrew
+</code></pre>
+
+<p>Family: Georgia</p>
+
+<pre><code>Font: Georgia-BoldItalic
+Font: Georgia-Bold
+Font: Georgia-Italic
+Font: Georgia
+</code></pre>
+
+<p>Family: Helvetica Neue</p>
+
+<pre><code>Font: HelveticaNeue-BoldItalic
+Font: HelveticaNeue-Light
+Font: HelveticaNeue-UltraLightItalic
+Font: HelveticaNeue-CondensedBold
+Font: HelveticaNeue-MediumItalic
+Font: HelveticaNeue-Thin
+Font: HelveticaNeue-Medium
+Font: HelveticaNeue-ThinItalic
+Font: HelveticaNeue-LightItalic
+Font: HelveticaNeue-UltraLight
+Font: HelveticaNeue-Bold
+Font: HelveticaNeue
+Font: HelveticaNeue-CondensedBlack
+</code></pre>
+
+<p>Family: Gill Sans</p>
+
+<pre><code>Font: GillSans
+Font: GillSans-Italic
+Font: GillSans-BoldItalic
+Font: GillSans-Light
+Font: GillSans-LightItalic
+Font: GillSans-Bold
+</code></pre>
+
+<p>Family: Palatino</p>
+
+<pre><code>Font: Palatino-Roman
+Font: Palatino-Italic
+Font: Palatino-Bold
+Font: Palatino-BoldItalic
+</code></pre>
+
+<p>Family: Courier New</p>
+
+<pre><code>Font: CourierNewPSMT
+Font: CourierNewPS-BoldMT
+Font: CourierNewPS-ItalicMT
+Font: CourierNewPS-BoldItalicMT
+</code></pre>
+
+<p>Family: Oriya Sangam MN</p>
+
+<pre><code>Font: OriyaSangamMN
+Font: OriyaSangamMN-Bold
+</code></pre>
+
+<p>Family: Didot</p>
+
+<pre><code>Font: Didot-Bold
+Font: Didot-Italic
+Font: Didot
+</code></pre>
+
+<p>Family: DIN Alternate</p>
+
+<pre><code>Font: DINAlternate-Bold
+</code></pre>
+
+<p>Family: Bodoni 72 Smallcaps</p>
+
+<pre><code>Font: BodoniSvtyTwoSCITCTT-Book
+</code></pre>
+
+<p>```</p>
+
+<p>字体如下图所示：</p>
+
+<p><img src="http://imsg.github.com/images/2013/UIFont_List.jpg" alt="UIFont" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Set toolbar items programmably]]></title>

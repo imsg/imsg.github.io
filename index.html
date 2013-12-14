@@ -9,7 +9,7 @@
 	<meta name="author" content="Anson Zhao">
 
 	
-	<meta name="description" content="Nov 28th, 2013 iOS, 翻译 Thread-Safe Class Design 翻译自Thread-Safe Class Design 线程安全类的设计 此文章将侧重于编写线程安全类和使用Grand Central Displatch(GCD)时的实用的技巧，设计模式，以及反模式 &hellip;">
+	<meta name="description" content="Dec 14th, 2013 dev_tips, iOS 列举所有UIFont字体 UI开发中总是需要了解iOS中提供的所有字体，UIFont接口+ (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -99,6 +99,82 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-14T23:08:00+08:00" data-updated="true" itemprop="datePublished">Dec 14<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/dev-tips/'>dev_tips</a>, <a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/12/14/list-all-uifont/" itemprop="url">列举所有UIFont字体</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>UI开发中总是需要了解iOS中提供的所有字体，UIFont接口<code>+ (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
+</code>也是通过字体名称来得到UIFont对象。</p>
+
+<p>简单写了几行代码就可以列举出所有字体。</p>
+
+
+		
+		<a href="/blog/2013/12/14/list-all-uifont/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-12T09:30:00+08:00" data-updated="true" itemprop="datePublished">Dec 12<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/12/12/handle-the-return-key-in-uitextview/" itemprop="url">Handle the Return Key in UITextView</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>今天QA同事提出希望模仿iOS native email client中写一封邮件时，在To/Cc/Bcc中填写email地址后按return键可以自动加上“, ”，不需要用户手动添加各个email地址之间的分隔符。如果写完收件人后再次return，则自动跳到下一个文本框中。
+研究了一下，发现UITextFieldDelegate中有<code>- (BOOL)textFieldShouldReturn:(UITextField *)textField</code>回调，可以处理return事件，但是UITextViewDelegate没有此类方法。看了一下UITextViewDelegate类中其他方法，发现<code>- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text</code>同样可以实现此功能。</p>
+
+
+		
+		<a href="/blog/2013/12/12/handle-the-return-key-in-uitextview/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
