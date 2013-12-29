@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS，工作随笔 | I'm Anson]]></title>
+  <link href="http://imsg.github.io/blog/categories/ios,gong-zuo-sui-bi/atom.xml" rel="self"/>
+  <link href="http://imsg.github.io/"/>
+  <updated>2013-12-29T20:51:23+08:00</updated>
+  <id>http://imsg.github.io/</id>
+  <author>
+    <name><![CDATA[Anson Zhao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[从UIColor生成UIImage，以及对UIImage进行高斯模糊]]></title>
+    <link href="http://imsg.github.io/blog/2013/12/28/uiimage-from-uicolor-with-gaussian-blur/"/>
+    <updated>2013-12-28T22:39:00+08:00</updated>
+    <id>http://imsg.github.io/blog/2013/12/28/uiimage-from-uicolor-with-gaussian-blur</id>
+    <content type="html"><![CDATA[<p>最近UI Designer设计的UI底色为高斯模糊的效果，因此研究了一下Core Image，写了一个UIImage的扩展类，方便使用。</p>
+
+<p>以下为radius为75.0f的效果：</p>
+
+<p><img src="http://imsg.github.com/images/2013/blurImage.png" alt="Gaussian Blur UIImage from UIColor" /></p>
+
+<!--more-->
+
+
+<p>UIImage扩展类头文件：
+```objc</p>
+
+<p>@interface UIImage (Extension)</p>
+
+<ul>
+<li>(UIImage <em>)imageWithColor:(UIColor </em>)color andSize:(CGSize)size;</li>
+<li>(UIImage <em>)gaussianBlurImage:(UIImage </em>)image andInputRadius:(CGFloat)radius;</li>
+<li>(UIImage <em>)gaussianBlurImageWithColor:(UIColor </em>)color andSize:(CGSize)size andInputRadius:(CGFloat)radius;</li>
+</ul>
+
+
+<p>@end</p>
+
+<p>```</p>
+
+<p>UIImage扩展类的实现.m文件：
+```objc
+@implementation UIImage (Extension)</p>
+
+<ul>
+<li><p>(UIImage <em>)imageWithColor:(UIColor </em>)color andSize:(CGSize)size
+{
+  CGRect rect = CGRectMake(0, 0, size.width, size.height);
+  UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSetFillColorWithColor(context, color.CGColor);
+  CGContextFillRect(context, rect);</p>
+
+<p>  UIImage *img = UIGraphicsGetImageFromCurrentImageContext();</p>
+
+<p>  UIGraphicsEndImageContext();</p>
+
+<p>  return img;
+}</p></li>
+<li><p>(UIImage <em>)gaussianBlurImage:(UIImage </em>)image andInputRadius:(CGFloat)radius
+{
+  if (!image) {
+      return nil;
+  }</p>
+
+<p>  CIContext <em>context = [CIContext contextWithOptions:nil];
+  CIImage </em>inputImage = [CIImage imageWithCGImage:image.CGImage];</p>
+
+<p>  CIFilter <em>filter = [CIFilter filterWithName:@&ldquo;CIGaussianBlur&rdquo;];
+  [filter setValue:inputImage forKey:kCIInputImageKey];
+  [filter setValue:[NSNumber numberWithFloat:radius] forKey:@&ldquo;inputRadius&rdquo;];
+  CIImage </em>result = [filter valueForKey:kCIOutputImageKey];
+  CGImageRef cgImage = [context createCGImage:result fromRect:[inputImage extent]];</p>
+
+<p>  return [UIImage imageWithCGImage:cgImage];
+}</p></li>
+<li><p>(UIImage <em>)gaussianBlurImageWithColor:(UIColor </em>)color andSize:(CGSize)size andInputRadius:(CGFloat)radius
+{
+  UIImage *image = [UIImage imageWithColor:color andSize:size];
+  if (image) {
+      return [UIImage gaussianBlurImage:image andInputRadius:radius];
+  }
+  else {
+      return nil;
+  }
+}</p></li>
+</ul>
+
+
+<p>@end</p>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>
